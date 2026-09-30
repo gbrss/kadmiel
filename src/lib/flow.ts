@@ -17,8 +17,8 @@ export function getFlowConfig(runtimeEnv?: EnvBag) {
 
   const env = (read('FLOW_ENV') || 'sandbox') as FlowEnv;
   const isProd = env === 'production';
-  const apiKey = read('FLOW_API_KEY');
-  const secretKey = read('FLOW_SECRET_KEY');
+  const apiKey = read('23F9B01B-6B2B-468A-878D-83713821LA52');
+  const secretKey = read('7d539160e0747d1b5707539af87683b4eeaf49c0');
   const host = isProd ? 'https://www.flow.cl/api' : 'https://sandbox.flow.cl/api';
 
   return { env, isProd, apiKey, secretKey, host };

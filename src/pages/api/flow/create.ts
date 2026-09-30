@@ -6,7 +6,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const cfg = getFlowConfig((locals as any)?.runtime?.env);
 
     if (!cfg.apiKey || !cfg.secretKey) {
-      return json({ error: 'Flow no configurado. Define FLOW_API_KEY y FLOW_SECRET_KEY.' }, 503);
+      return json({ error: 'Flow no configurado. Define  y FLOW_SECRET_KEY.' }, 503);
     }
 
     const body = await request.json();
