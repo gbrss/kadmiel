@@ -15,10 +15,10 @@ import Footer from '../components/Footer.astro';
 
     <div id="checkout-form" class="hidden space-y-5">
       <div class="panel p-4 sm:p-6 overflow-hidden">
-        <h2 class="font-semibold text-stone-100 mb-4">Resumen del pedido</h2>
+        <h2 class="font-semibold text-white mb-4">Resumen del pedido</h2>
         <ul id="order-summary" class="divide-y divide-amber-500/10"></ul>
         <div class="border-t border-amber-500/20 mt-3 pt-3 space-y-2 text-sm">
-          <div class="flex justify-between gap-3 text-stone-400">
+          <div class="flex justify-between gap-3 text-stone-300">
             <span class="min-w-0">Costo proveedor est. (60%)</span>
             <span id="order-cost" class="shrink-0 tabular-nums">$0</span>
           </div>
@@ -27,38 +27,38 @@ import Footer from '../components/Footer.astro';
             <span id="order-commission" class="shrink-0 tabular-nums">$0</span>
           </div>
           <div class="flex justify-between items-center gap-3 pt-2 border-t border-amber-500/15">
-            <span class="font-semibold text-base text-stone-100">Total a pagar</span>
+            <span class="font-semibold text-base text-white">Total a pagar</span>
             <span id="order-total" class="text-lg sm:text-xl font-bold text-amber-400 shrink-0 tabular-nums">$0</span>
           </div>
         </div>
       </div>
 
       <div class="panel p-4 sm:p-6">
-        <h2 class="font-semibold text-stone-100 mb-4">Datos de envío</h2>
+        <h2 class="font-semibold text-white mb-4">Datos de envío</h2>
         <form id="pay-form" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-stone-300 mb-1">Nombre completo</label>
+            <label class="block text-sm font-medium text-stone-200 mb-1">Nombre completo</label>
             <input type="text" name="name" required autocomplete="name" class="checkout-input" placeholder="Juan Pérez" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-stone-300 mb-1">Email</label>
+            <label class="block text-sm font-medium text-stone-200 mb-1">Email</label>
             <input type="email" name="email" required autocomplete="email" class="checkout-input" placeholder="juan@email.com" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-stone-300 mb-1">Teléfono</label>
+            <label class="block text-sm font-medium text-stone-200 mb-1">Teléfono</label>
             <input type="tel" name="phone" required autocomplete="tel" class="checkout-input" placeholder="+56 9 1234 5678" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-stone-300 mb-1">Dirección</label>
+            <label class="block text-sm font-medium text-stone-200 mb-1">Dirección</label>
             <input type="text" name="address" required autocomplete="street-address" class="checkout-input" placeholder="Calle, número, depto" />
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-stone-300 mb-1">Ciudad</label>
+              <label class="block text-sm font-medium text-stone-200 mb-1">Ciudad</label>
               <input type="text" name="city" required class="checkout-input" placeholder="Santiago" />
             </div>
             <div>
-              <label class="block text-sm font-medium text-stone-300 mb-1">Región</label>
+              <label class="block text-sm font-medium text-stone-200 mb-1">Región</label>
               <input type="text" name="region" required class="checkout-input" placeholder="Metropolitana" />
             </div>
           </div>
@@ -68,7 +68,7 @@ import Footer from '../components/Footer.astro';
             <label class="flex items-start gap-3 p-3 sm:p-4 rounded-xl border border-amber-500/40 bg-amber-500/10 cursor-pointer">
               <input type="radio" name="payment" value="webpay" checked class="mt-1 accent-amber-500" />
               <div class="min-w-0 flex-1">
-                <div class="font-medium text-stone-100">WebPay Plus</div>
+                <div class="font-medium text-white">WebPay Plus</div>
                 <div class="text-xs text-stone-400 mt-0.5">Tarjetas de crédito y débito · Transbank</div>
               </div>
               <span class="text-xl shrink-0" aria-hidden="true">💳</span>
@@ -95,33 +95,7 @@ import Footer from '../components/Footer.astro';
   <Footer />
 </Layout>
 
-<style>
-  .order-line {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding: 0.65rem 0;
-  }
-  .order-line-name {
-    min-width: 0;
-    flex: 1 1 auto;
-    color: #d6d3d1;
-    font-size: 0.8125rem;
-    line-height: 1.35;
-    word-break: break-word;
-    overflow-wrap: anywhere;
-  }
-  .order-line-price {
-    flex: 0 0 auto;
-    font-weight: 600;
-    font-size: 0.8125rem;
-    color: #f5e6c8;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-    text-align: right;
-  }
-</style>
+<!-- estilos de .order-line en global.css (HTML dinámico) -->
 
 <script>
   const COMMISSION = 0.4;

@@ -99,9 +99,16 @@
   /* Superficie clara (formularios / paneles) */
   .panel {
     @apply rounded-2xl overflow-hidden;
-    background: linear-gradient(180deg, #1a1814 0%, #141210 100%);
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    background: linear-gradient(180deg, #1f1c17 0%, #16140f 100%);
+    border: 1px solid rgba(212, 175, 55, 0.22);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    color: #f5f0e6;
+  }
+  .panel h1, .panel h2, .panel h3 {
+    color: #faf8f4;
+  }
+  .panel label {
+    color: #e7e0d0;
   }
 
   .panel-light {
@@ -179,4 +186,38 @@
   .bg-gold-soft {
     background: rgba(212, 175, 55, 0.1);
   }
+}
+
+
+/* Order lines (inyectadas por JS — deben ser globales) */
+.order-line {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 0;
+}
+.order-line-name {
+  min-width: 0;
+  flex: 1 1 auto;
+  color: #f5f0e6;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+.order-line-price {
+  flex: 0 0 auto;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: #f0d78c;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-align: right;
+}
+.order-meta {
+  color: #c4b8a0;
+}
+.order-meta-strong {
+  color: #faf8f4;
 }
