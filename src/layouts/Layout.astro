@@ -7,8 +7,8 @@ interface Props {
   description?: string;
 }
 const {
-  title = 'kadmiel.cl — Tienda online',
-  description = 'kadmiel.cl — Productos seleccionados con envío a Chile. Paga con WebPay.',
+  title = 'KADMIEL — kadmiel.cl',
+  description = 'KADMIEL — Productos seleccionados con envío a Chile. Paga con WebPay.',
 } = Astro.props;
 ---
 <!DOCTYPE html>
@@ -19,9 +19,9 @@ const {
   <meta name="description" content={description} />
   <title>{title}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/jpeg" href="/logo-kadmiel.jpg" />
-  <link rel="apple-touch-icon" href="/logo-kadmiel.jpg" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.75em' x='50%' text-anchor='middle' font-size='48' font-family='Georgia,serif' fill='%23d4af37'>K</text></svg>" />
 </head>
 <body class="min-h-screen flex flex-col bg-gray-50">
   <slot />

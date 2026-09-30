@@ -6,7 +6,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "cf:preview": "wrangler pages dev ./dist"
+    "cf:preview": "wrangler pages dev ./dist",
+    "cf:deploy": "npm run build && wrangler pages deploy dist --project-name=kadmiel-cl",
+    "ci": "npm run build"
   },
   "dependencies": {
     "astro": "^5.7.10",

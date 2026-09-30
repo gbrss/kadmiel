@@ -5,9 +5,21 @@ import { categories } from '../data/products';
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
       <div>
-        <a href="/" class="flex items-center gap-2 mb-4">
-          <img src="/logo-kadmiel.jpg" alt="Kadmiel" class="h-12 w-auto rounded-md object-contain" />
+        <a href="/" class="inline-block mb-4 no-underline">
+          <span class="footer-wordmark">KADMIEL</span>
         </a>
+        <style>
+          .footer-wordmark {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-weight: 600;
+            font-size: 1.75rem;
+            letter-spacing: 0.28em;
+            background: linear-gradient(135deg, #ffffff, #d4af37 50%, #f5e6c8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+          }
+        </style>
         <p class="text-sm text-gray-400 leading-relaxed mb-4">
           <strong class="text-amber-400">kadmiel.cl</strong> — Productos seleccionados con envío a todo Chile. Paga seguro con WebPay.
         </p>

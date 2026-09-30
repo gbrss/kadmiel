@@ -1,3 +1,7 @@
 name = "kadmiel-cl"
 compatibility_date = "2025-01-01"
 pages_build_output_dir = "dist"
+
+# Proyecto Cloudflare Pages
+# Variables sensibles: definir en Dashboard → Settings → Environment variables
+# o como secrets de GitHub Actions (WEBPAY_*, CLOUDFLARE_*)
