@@ -221,3 +221,10 @@
 .order-meta-strong {
   color: #faf8f4;
 }
+
+/* Cantidad en carrito (HTML dinámico) */
+.cart-qty {
+  color: #fde68a !important;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}

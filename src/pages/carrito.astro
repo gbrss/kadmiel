@@ -59,9 +59,9 @@ import Footer from '../components/Footer.astro';
           <a href="/producto/${item.slug}" class="font-medium text-sm text-stone-50 hover:text-amber-400 line-clamp-2">${item.name}</a>
           <p class="text-amber-400 font-semibold mt-1">${formatCLP(item.price)}</p>
           <div class="flex items-center gap-3 mt-2">
-            <button data-idx="${idx}" class="qty-minus w-7 h-7 rounded border border-amber-500/30 text-stone-300 hover:bg-amber-500/10">−</button>
-            <span class="text-sm font-medium w-6 text-center">${item.qty}</span>
-            <button data-idx="${idx}" class="qty-plus w-7 h-7 rounded border border-amber-500/30 text-stone-300 hover:bg-amber-500/10">+</button>
+            <button data-idx="${idx}" class="qty-minus w-8 h-8 rounded-lg border border-amber-500/40 text-amber-200 hover:bg-amber-500/15 hover:border-amber-400">−</button>
+            <span class="cart-qty text-sm font-bold w-8 text-center text-amber-200">${item.qty}</span>
+            <button data-idx="${idx}" class="qty-plus w-8 h-8 rounded-lg border border-amber-500/40 text-amber-200 hover:bg-amber-500/15 hover:border-amber-400">+</button>
             <button data-idx="${idx}" class="remove-item ml-auto text-sm text-red-400 hover:text-red-300">Eliminar</button>
           </div>
         </div>

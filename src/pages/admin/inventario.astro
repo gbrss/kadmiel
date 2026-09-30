@@ -1,0 +1,136 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+---
+<Layout title="Inventario — Admin KADMIEL">
+  <Header />
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+      <div>
+        <p class="section-eyebrow mb-1">Admin</p>
+        <h1 class="section-title text-2xl">Inventario y proveedor</h1>
+        <p class="text-sm text-stone-400 mt-1">Stock por SKU · sincronización con API de proveedor (demo)</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button type="button" id="btn-refresh" class="btn-secondary text-sm py-2">Actualizar</button>
+        <button type="button" id="btn-sync" class="btn-primary text-sm py-2">Sync proveedor</button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+      <div class="panel p-4">
+        <p class="text-xs text-stone-400">SKUs</p>
+        <p id="stat-skus" class="text-xl font-bold text-stone-50">—</p>
+      </div>
+      <div class="panel p-4">
+        <p class="text-xs text-stone-400">Disponible</p>
+        <p id="stat-avail" class="text-xl font-bold text-amber-400">—</p>
+      </div>
+      <div class="panel p-4">
+        <p class="text-xs text-stone-400">Reservado</p>
+        <p id="stat-res" class="text-xl font-bold text-stone-200">—</p>
+      </div>
+      <div class="panel p-4">
+        <p class="text-xs text-stone-400">Proveedor</p>
+        <p class="text-sm font-medium text-stone-200 mt-1">DemoSupplier</p>
+      </div>
+    </div>
+
+    <p id="admin-msg" class="hidden text-sm mb-4 text-amber-300"></p>
+
+    <div class="panel overflow-hidden">
+      <div class="overflow-x-auto max-h-[70vh] overflow-y-auto">
+        <table class="w-full text-sm text-left">
+          <thead class="sticky top-0 bg-ink-800 text-amber-200 z-10">
+            <tr>
+              <th class="px-3 py-2">Producto</th>
+              <th class="px-3 py-2">Variante</th>
+              <th class="px-3 py-2">SKU</th>
+              <th class="px-3 py-2 text-right">Disp.</th>
+              <th class="px-3 py-2 text-right">Res.</th>
+              <th class="px-3 py-2">Ajustar</th>
+            </tr>
+          </thead>
+          <tbody id="inv-body" class="text-stone-200"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="mt-8 panel p-4 text-xs text-stone-400 space-y-1">
+      <p><strong class="text-stone-300">API</strong></p>
+      <p><code class="text-amber-200/80">GET /api/inventory</code> — listar stock</p>
+      <p><code class="text-amber-200/80">POST /api/inventory</code> {"{ action: 'sync' | 'set', sku, available }"}</p>
+      <p><code class="text-amber-200/80">POST /api/inventory/reserve</code> — reserve | release | commit</p>
+      <p><code class="text-amber-200/80">GET /api/supplier</code> — catálogo proveedor · <code class="text-amber-200/80">POST</code> crear orden</p>
+    </div>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  const msg = document.getElementById('admin-msg')!;
+  function show(t: string) {
+    msg.textContent = t;
+    msg.classList.remove('hidden');
+    setTimeout(() => msg.classList.add('hidden'), 4000);
+  }
+
+  async function load() {
+    const res = await fetch('/api/inventory');
+    const data = await res.json();
+    document.getElementById('stat-skus')!.textContent = String(data.count);
+    document.getElementById('stat-avail')!.textContent = String(data.totalAvailable);
+    document.getElementById('stat-res')!.textContent = String(data.totalReserved);
+    const body = document.getElementById('inv-body')!;
+    body.innerHTML = (data.items as any[])
+      .slice(0, 200)
+      .map(
+        (i) => `<tr class="border-t border-amber-500/10 hover:bg-amber-500/5">
+        <td class="px-3 py-2 max-w-[180px] truncate" title="${i.productName}">${i.productName}</td>
+        <td class="px-3 py-2 text-stone-400 text-xs">${i.variantLabel}</td>
+        <td class="px-3 py-2 font-mono text-[11px] text-stone-500">${i.sku}</td>
+        <td class="px-3 py-2 text-right font-semibold text-amber-300">${i.available}</td>
+        <td class="px-3 py-2 text-right text-stone-400">${i.reserved}</td>
+        <td class="px-3 py-2">
+          <form class="set-form flex gap-1 items-center" data-sku="${i.sku}">
+            <input type="number" min="0" value="${i.available}" class="w-16 checkout-input !py-1 !text-xs" />
+            <button type="submit" class="text-xs text-amber-400 hover:text-amber-200">OK</button>
+          </form>
+        </td>
+      </tr>`
+      )
+      .join('');
+
+    document.querySelectorAll('.set-form').forEach((form) => {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const f = e.currentTarget as HTMLFormElement;
+        const sku = f.dataset.sku!;
+        const available = Number((f.querySelector('input') as HTMLInputElement).value);
+        const r = await fetch('/api/inventory', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'set', sku, available }),
+        });
+        const j = await r.json();
+        show(j.ok ? `Actualizado ${sku}` : j.error || 'Error');
+        load();
+      });
+    });
+  }
+
+  document.getElementById('btn-refresh')?.addEventListener('click', () => load());
+  document.getElementById('btn-sync')?.addEventListener('click', async () => {
+    const r = await fetch('/api/inventory', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'sync' }),
+    });
+    const j = await r.json();
+    show(j.ok ? `Sync OK · ${j.updated} SKUs` : j.error || 'Error');
+    load();
+  });
+
+  load();
+</script>

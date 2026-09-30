@@ -1,8 +1,26 @@
+import { sizeChartIdFor } from './sizeCharts';
+export interface ProductVariant {
+  /** Nombre de la opción: Color, Talla, etc. */
+  name: string;
+  options: string[];
+}
+
+export interface CustomerReview {
+  author: string;
+  rating: number;
+  date: string;
+  title?: string;
+  comment: string;
+  verified?: boolean;
+}
+
 export interface Product {
   id: string;
   name: string;
   slug: string;
   description: string;
+  /** Características / ficha técnica en viñetas */
+  features?: string[];
   price: number;
   originalPrice?: number;
   image: string;
@@ -13,6 +31,14 @@ export interface Product {
   category: string;
   tags: string[];
   stock: number;
+  /** Opciones de producto (color, talla, etc.) */
+  variants?: ProductVariant[];
+  /** Comentarios de clientes (demo / ilustrativos) */
+  customerReviews?: CustomerReview[];
+  /** ID de tabla de tallas (src/data/sizeCharts.ts) */
+  sizeChartId?: string;
+  /** SKU base en el proveedor */
+  supplierSku?: string;
 }
 
 export interface Category {
@@ -70,7 +96,7 @@ function p(
  * La 1ª foto es la principal y debe representar el producto;
  * la 2ª y 3ª refuerzan el mismo tipo (detalle / uso / similar).
  */
-export const products: Product[] = [
+const rawProducts: Product[] = [
   // ========== ELECTRÓNICA ==========
   p('el-001',
     'Auriculares TWS Bluetooth 5.3 con Cancelación de Ruido',
@@ -881,6 +907,119 @@ export const products: Product[] = [
     ['photo-1558002038-1055907df827', 'photo-1558618666-fcd25c85cd64', 'photo-1560518883-ce09059eeffa'],
     4.6, 3500, 24000, 'oficina', ['camara', 'seguridad', '360', 'wifi'], 55),
 ];
+
+
+/** Variantes típicas según categoría (demo, no copiadas de AliExpress). */
+function variantsFor(category: string, name: string): ProductVariant[] {
+  const n = name.toLowerCase();
+  if (category === 'moda') {
+    if (n.includes('pantal') || n.includes('cargo')) {
+      return [
+        { name: 'Color', options: ['Negro', 'Beige', 'Verde militar', 'Gris'] },
+        { name: 'Talla', options: ['S', 'M', 'L', 'XL', 'XXL'] },
+      ];
+    }
+    if (n.includes('anillo') || n.includes('collar') || n.includes('pendiente')) {
+      return [{ name: 'Acabado', options: ['Dorado', 'Plateado', 'Oro rosa'] }];
+    }
+    if (n.includes('gafas') || n.includes('gorra') || n.includes('bufanda') || n.includes('cintur')) {
+      return [{ name: 'Color', options: ['Negro', 'Marrón', 'Azul', 'Beige'] }];
+    }
+    return [
+      { name: 'Color', options: ['Negro', 'Blanco', 'Beige'] },
+      { name: 'Talla', options: ['Única', 'S', 'M', 'L'] },
+    ];
+  }
+  if (category === 'electronica' || category === 'oficina') {
+    if (n.includes('auricular') || n.includes('cable') || n.includes('hub') || n.includes('mouse')) {
+      return [{ name: 'Color', options: ['Negro', 'Blanco', 'Gris espacial'] }];
+    }
+    if (n.includes('smartwatch') || n.includes('reloj')) {
+      return [
+        { name: 'Color correa', options: ['Negro', 'Rosa', 'Azul'] },
+        { name: 'Tamaño', options: ['40 mm', '44 mm'] },
+      ];
+    }
+    return [{ name: 'Color', options: ['Negro', 'Blanco'] }];
+  }
+  if (category === 'deportes') {
+    return [
+      { name: 'Color', options: ['Negro', 'Rojo', 'Azul'] },
+      { name: 'Talla', options: ['S', 'M', 'L', 'XL'] },
+    ];
+  }
+  if (category === 'mascotas') {
+    return [
+      { name: 'Talla / tamaño', options: ['S (hasta 5 kg)', 'M (5–15 kg)', 'L (15–30 kg)', 'XL (30+ kg)'] },
+      { name: 'Color', options: ['Negro', 'Rosa', 'Azul', 'Gris'] },
+    ];
+  }
+  if (category === 'hogar' || category === 'cocina') {
+    return [{ name: 'Color', options: ['Negro', 'Blanco', 'Gris', 'Madera'] }];
+  }
+  if (category === 'belleza') {
+    return [{ name: 'Color / tono', options: ['Clásico', 'Rosa', 'Dorado', 'Negro'] }];
+  }
+  return [{ name: 'Opción', options: ['Estándar'] }];
+}
+
+const REVIEW_TEMPLATES = [
+  { title: 'Muy buen producto', comment: 'Llegó en buen estado y cumple lo que promete. Lo uso a diario y estoy conforme con la calidad por el precio.' },
+  { title: 'Recomendado', comment: 'Buena relación calidad-precio. El empaque venía bien protegido. Lo volvería a comprar.' },
+  { title: 'Tal como en la descripción', comment: 'Coincide con las fotos y la ficha. Funciona bien. El envío a Chile demoró un poco pero llegó completo.' },
+  { title: 'Superó expectativas', comment: 'Pensé que sería más básico y me sorprendió. Materiales decentes y fácil de usar.' },
+  { title: 'Buena compra', comment: 'Para el precio está bien. Algunos detalles podrían mejorar, pero en general contento/a.' },
+  { title: 'Ideal para regalo', comment: 'Se lo regalé a un familiar y le gustó. Presentación correcta.' },
+  { title: 'Funciona perfecto', comment: 'Sin fallas hasta ahora. Instrucciones claras. Recomiendo elegir bien la variante (color/talla).' },
+  { title: 'Calidad aceptable', comment: 'No es premium, pero para uso diario alcanza. Estrellas según precio.' },
+];
+
+const AUTHORS = ['Camila R.', 'José M.', 'Valentina P.', 'Diego S.', 'Francisca L.', 'Matías A.', 'Antonia G.', 'Nicolás B.', 'Javiera T.', 'Sebastián H.'];
+
+function reviewsFor(p: { rating: number; name: string; id: string }): CustomerReview[] {
+  const seed = p.id.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+  const count = 4 + (seed % 3); // 4–6 reseñas
+  const out: CustomerReview[] = [];
+  for (let i = 0; i < count; i++) {
+    const tpl = REVIEW_TEMPLATES[(seed + i * 3) % REVIEW_TEMPLATES.length];
+    const author = AUTHORS[(seed + i * 5) % AUTHORS.length];
+    const star = Math.min(5, Math.max(3, Math.round(p.rating) - (i % 3 === 0 ? 0 : i % 2)));
+    const month = 1 + ((seed + i) % 12);
+    const day = 1 + ((seed + i * 7) % 28);
+    out.push({
+      author,
+      rating: star,
+      date: `2025-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`,
+      title: tpl.title,
+      comment: tpl.comment.replace('el producto', p.name.split(' ').slice(0, 3).join(' ').toLowerCase()),
+      verified: i % 2 === 0,
+    });
+  }
+  return out;
+}
+
+function featuresFor(name: string, category: string, tags: string[]): string[] {
+  const base = [
+    'Producto inspirado en bestsellers de importación (ficha demo Kadmiel)',
+    'Envío disponible a Chile',
+    'Pago seguro con WebPay',
+  ];
+  if (tags.length) base.unshift(`Etiquetas: ${tags.slice(0, 4).join(', ')}`);
+  if (category === 'electronica') base.unshift('Compatible con uso diario; revisar voltaje/cables incluidos');
+  if (category === 'moda') base.unshift('Consultar tabla de tallas en las opciones del producto');
+  return base;
+}
+
+/** Enriquecer catálogo con variantes y reseñas (datos ilustrativos). */
+
+export const products: Product[] = rawProducts.map((p) => ({
+  ...p,
+  features: p.features ?? featuresFor(p.name, p.category, p.tags),
+  variants: p.variants ?? variantsFor(p.category, p.name),
+  customerReviews: p.customerReviews ?? reviewsFor(p),
+  sizeChartId: p.sizeChartId ?? sizeChartIdFor(p.category, p.name),
+  supplierSku: p.supplierSku ?? `SUP-${p.id.toUpperCase()}`,
+}));
 
 export function getProductsByCategory(categorySlug: string): Product[] {
   return products.filter((p) => p.category === categorySlug);

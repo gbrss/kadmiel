@@ -3,7 +3,17 @@ import Layout from '../../layouts/Layout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import ProductCard from '../../components/ProductCard.astro';
-import { getProductBySlug, getProductsByCategory, formatPrice, products, getCategoryBySlug, getCommissionAmount, getProductCost, getCommissionPercentLabel } from '../../data/products';
+import {
+  getProductBySlug,
+  getProductsByCategory,
+  formatPrice,
+  products,
+  getCategoryBySlug,
+  getCommissionAmount,
+  getProductCost,
+  getCommissionPercentLabel,
+} from '../../data/products';
+import { getSizeChart } from '../../data/sizeCharts';
 
 export function getStaticPaths() {
   return products.map((p) => ({ params: { slug: p.slug } }));
@@ -16,34 +26,52 @@ const category = getCategoryBySlug(product.category);
 const related = getProductsByCategory(product.category).filter((p) => p.id !== product.id).slice(0, 4);
 const discount = product.originalPrice ? Math.round((1 - product.price / product.originalPrice) * 100) : 0;
 const gallery = product.images?.length ? product.images : [product.image];
+const variants = product.variants ?? [];
+const customerReviews = product.customerReviews ?? [];
+const features = product.features ?? [];
+const sizeChart = getSizeChart(product.sizeChartId);
 ---
-<Layout title={`${product.name} — kadmiel.cl`} description={product.description}>
+<Layout title={`${product.name} — KADMIEL`} description={product.description}>
   <Header />
   <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
     <nav class="text-sm text-stone-400 mb-6">
       <a href="/" class="hover:text-amber-400">Inicio</a>
       <span class="mx-2">/</span>
-      {category && <><a href={`/categoria/${category.slug}`} class="hover:text-amber-400">{category.name}</a><span class="mx-2">/</span></>}
-      <span class="text-stone-100 line-clamp-1">{product.name}</span>
+      {category && (
+        <>
+          <a href={`/categoria/${category.slug}`} class="hover:text-amber-400">{category.name}</a>
+          <span class="mx-2">/</span>
+        </>
+      )}
+      <span class="text-stone-200 line-clamp-1">{product.name}</span>
     </nav>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
       <!-- Galería -->
       <div>
-        <div class="aspect-square bg-gray-100 rounded-2xl overflow-hidden mb-3">
+        <div
+          id="zoom-stage"
+          class="zoom-stage aspect-square rounded-2xl overflow-hidden mb-3 border border-amber-500/20 bg-ink-800 relative touch-none select-none"
+          role="img"
+          aria-label={`Imagen de ${product.name}. Mantén pulsado o pasa el cursor para ampliar.`}
+        >
           <img
             id="main-image"
             src={gallery[0]}
             alt={product.name}
-            class="w-full h-full object-cover transition-opacity duration-200"
+            class="zoom-img w-full h-full object-cover"
+            draggable="false"
           />
+          <span class="zoom-hint pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 text-[10px] tracking-wide uppercase text-amber-100/80 bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-full border border-amber-500/20">
+            Ampliar · toca o mueve el cursor
+          </span>
         </div>
         {gallery.length > 1 && (
           <div class="grid grid-cols-3 gap-2">
             {gallery.map((src, i) => (
               <button
                 type="button"
-                class="thumb-btn aspect-square rounded-xl overflow-hidden border-2 border-transparent hover:border-brand-400 focus:border-brand-500 focus:outline-none bg-gray-100"
+                class="thumb-btn aspect-square rounded-xl overflow-hidden border-2 border-amber-500/20 hover:border-amber-400 focus:border-amber-400 focus:outline-none bg-ink-800"
                 data-src={src}
                 data-index={i}
               >
@@ -52,41 +80,127 @@ const gallery = product.images?.length ? product.images : [product.image];
             ))}
           </div>
         )}
+        <p class="mt-3 text-[11px] text-stone-500 leading-relaxed">
+          Fotos ilustrativas de stock. No son capturas oficiales de AliExpress ni del fabricante.
+        </p>
       </div>
 
       <!-- Info -->
       <div>
-        <h1 class="text-2xl md:text-3xl font-bold text-stone-50 mb-3">{product.name}</h1>
-        <div class="flex flex-wrap items-center gap-3 mb-4">
-          <span class="text-amber-400">{'★'.repeat(Math.round(product.rating))}</span>
-          <span class="text-sm text-stone-400">{product.rating} · {product.reviews.toLocaleString('es-CL')} reseñas</span>
-          <span class="text-sm text-stone-500">·</span>
-          <span class="text-sm text-green-600 font-medium">{product.sales.toLocaleString('es-CL')}+ vendidos</span>
+        <h1 class="text-2xl md:text-3xl font-bold text-stone-50 mb-3 leading-tight">{product.name}</h1>
+        <div class="flex flex-wrap items-center gap-3 mb-4 text-sm">
+          <span class="text-amber-400">{'★'.repeat(Math.round(product.rating))}{'☆'.repeat(5 - Math.round(product.rating))}</span>
+          <span class="text-stone-300">{product.rating.toFixed(1)}</span>
+          <a href="#resenas" class="text-amber-400/90 hover:text-amber-300 underline-offset-2 hover:underline">
+            {product.reviews.toLocaleString('es-CL')} reseñas
+          </a>
+          <span class="text-stone-500">·</span>
+          <span class="text-stone-400">{product.sales.toLocaleString('es-CL')} vendidos</span>
         </div>
-        <div class="flex items-baseline gap-3 mb-4">
+
+        <div class="flex items-baseline gap-3 mb-4 flex-wrap">
           <span class="text-3xl font-bold text-amber-400">{formatPrice(product.price)}</span>
           {product.originalPrice && (
             <>
               <span class="text-lg text-stone-500 line-through">{formatPrice(product.originalPrice)}</span>
-              <span class="bg-red-100 text-red-700 text-sm font-bold px-2 py-0.5 rounded">-{discount}%</span>
+              <span class="text-xs font-bold bg-gradient-to-r from-amber-200 to-amber-500 text-black px-2 py-0.5 rounded-full">
+                -{discount}%
+              </span>
             </>
           )}
         </div>
-        <div class="bg-amber-500/10 border border-amber-100 rounded-xl p-4 mb-6 text-sm">
-          <p class="font-semibold text-amber-300 mb-2">Comisión por venta: {getCommissionPercentLabel()}</p>
-          <div class="grid grid-cols-2 gap-2 text-emerald-900/80">
-            <span>Costo estimado proveedor</span>
-            <span class="text-right font-medium">{formatPrice(getProductCost(product.price))}</span>
-            <span>Tu comisión / margen</span>
-            <span class="text-right font-bold text-amber-400">{formatPrice(getCommissionAmount(product.price))}</span>
-          </div>
+
+        <div class="panel p-3 mb-5 text-xs grid grid-cols-2 gap-2">
+          <span class="text-stone-400">Costo est. proveedor</span>
+          <span class="text-right text-stone-200">{formatPrice(getProductCost(product.price))}</span>
+          <span class="text-stone-400">Comisión tienda {getCommissionPercentLabel()}</span>
+          <span class="text-right font-bold text-amber-400">{formatPrice(getCommissionAmount(product.price))}</span>
         </div>
-        <p class="text-stone-300 leading-relaxed mb-6 whitespace-pre-line">{product.description}</p>
-        <div class="flex items-center gap-2 mb-6 text-sm text-stone-400">
-          <span class="inline-flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full"></span> En stock ({product.stock})</span>
-          <span>·</span>
+
+        <p class="text-stone-200 leading-relaxed mb-5 whitespace-pre-line text-sm sm:text-base">{product.description}</p>
+
+        {features.length > 0 && (
+          <ul class="mb-5 space-y-1.5 text-sm text-stone-300">
+            {features.map((f) => (
+              <li class="flex gap-2">
+                <span class="text-amber-400 shrink-0">✓</span>
+                <span>{f}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <!-- Variantes -->
+        {variants.length > 0 && (
+          <div class="space-y-4 mb-6" id="variant-selectors">
+            {variants.map((v) => (
+              <div>
+                <p class="text-sm font-medium text-stone-200 mb-2">
+                  {v.name}: <span class="text-amber-300 variant-label" data-variant={v.name}>—</span>
+                </p>
+                <div class="flex flex-wrap gap-2" role="group" aria-label={v.name}>
+                  {v.options.map((opt, oi) => (
+                    <button
+                      type="button"
+                      class="variant-opt px-3 py-1.5 rounded-lg text-sm border border-amber-500/30 text-stone-200 hover:border-amber-400 hover:bg-amber-500/10 transition-colors"
+                      data-variant={v.name}
+                      data-value={opt}
+                      data-default={oi === 0 ? '1' : '0'}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {sizeChart && (
+          <div class="mb-6 panel overflow-hidden">
+            <div class="px-4 py-3 border-b border-amber-500/20 flex items-center justify-between gap-2">
+              <h2 class="text-sm font-semibold text-stone-50">Tabla de tallas — {sizeChart.name}</h2>
+              <span class="text-[10px] text-stone-500 uppercase tracking-wide">{sizeChart.unit}</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left">
+                <thead>
+                  <tr class="bg-amber-500/10 text-amber-200">
+                    {sizeChart.columns.map((col) => (
+                      <th class="px-3 py-2 font-semibold whitespace-nowrap">{col}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {sizeChart.rows.map((row) => (
+                    <tr class="border-t border-amber-500/10 text-stone-200">
+                      <td class="px-3 py-2 font-medium text-amber-100">{row.size}</td>
+                      {sizeChart.columns.slice(1).map((col) => (
+                        <td class="px-3 py-2 whitespace-nowrap">{row.measures[col] ?? '—'}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {sizeChart.note && (
+              <p class="px-4 py-2 text-xs text-stone-400 border-t border-amber-500/10">{sizeChart.note}</p>
+            )}
+          </div>
+        )}
+
+        <div class="flex items-center gap-2 mb-6 text-sm text-stone-300">
+          <span class="inline-flex items-center gap-1">
+            <span class="w-2 h-2 bg-emerald-400 rounded-full"></span>
+            En stock ({product.stock})
+            {product.supplierSku && (
+              <span class="text-stone-500 text-xs ml-1">· {product.supplierSku}</span>
+            )}
+          </span>
+          <span class="text-stone-600">·</span>
           <span>Envío a Chile</span>
         </div>
+
         <div class="flex flex-wrap gap-3">
           <button
             id="add-to-cart"
@@ -101,13 +215,50 @@ const gallery = product.images?.length ? product.images : [product.image];
           </button>
           <a href="/carrito" class="btn-secondary">Ver carrito</a>
         </div>
+
         <div class="mt-6 flex flex-wrap gap-2">
           {product.tags.map((t) => (
-            <span class="text-xs bg-gray-100 text-stone-300 px-2.5 py-1 rounded-full">#{t}</span>
+            <span class="text-xs bg-amber-500/10 text-amber-200/90 border border-amber-500/20 px-2.5 py-1 rounded-full">#{t}</span>
           ))}
         </div>
       </div>
     </div>
+
+    <!-- Reseñas -->
+    <section id="resenas" class="mb-14">
+      <div class="flex items-end justify-between gap-4 mb-6">
+        <div>
+          <p class="section-eyebrow mb-1">Opiniones</p>
+          <h2 class="section-title text-xl md:text-2xl">Comentarios de clientes</h2>
+        </div>
+        <p class="text-sm text-stone-400 hidden sm:block">
+          {product.rating.toFixed(1)} ★ · {product.reviews.toLocaleString('es-CL')} reseñas
+        </p>
+      </div>
+
+      {customerReviews.length === 0 ? (
+        <p class="text-stone-400 text-sm">Aún no hay comentarios publicados.</p>
+      ) : (
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {customerReviews.map((r) => (
+            <article class="panel p-4 sm:p-5">
+              <div class="flex items-start justify-between gap-3 mb-2">
+                <div>
+                  <p class="font-semibold text-stone-50 text-sm">{r.author}</p>
+                  <p class="text-xs text-stone-500">{r.date}{r.verified ? ' · Compra verificada' : ''}</p>
+                </div>
+                <span class="text-amber-400 text-sm shrink-0">{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</span>
+              </div>
+              {r.title && <h3 class="text-sm font-medium text-amber-200/90 mb-1">{r.title}</h3>}
+              <p class="text-sm text-stone-300 leading-relaxed">{r.comment}</p>
+            </article>
+          ))}
+        </div>
+      )}
+      <p class="mt-4 text-[11px] text-stone-500 max-w-2xl">
+        Las reseñas mostradas son de ejemplo para la demo de kadmiel.cl y no provienen de AliExpress ni de compradores reales de esa plataforma.
+      </p>
+    </section>
 
     {related.length > 0 && (
       <section>
@@ -120,43 +271,210 @@ const gallery = product.images?.length ? product.images : [product.image];
   </main>
   <Footer />
 </Layout>
+
+<style>
+  .zoom-stage {
+    cursor: zoom-in;
+  }
+  .zoom-stage.is-zooming {
+    cursor: zoom-out;
+  }
+  .zoom-img {
+    transform-origin: center center;
+    transition: transform 0.12s ease-out, opacity 0.2s ease;
+    will-change: transform;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .zoom-stage.is-zooming .zoom-img {
+    transition: none;
+  }
+  .zoom-stage.is-zooming .zoom-hint {
+    opacity: 0;
+  }
+  @media (hover: none) {
+    .zoom-hint {
+      opacity: 1;
+    }
+  }
+</style>
+
 <script>
   const main = document.getElementById('main-image') as HTMLImageElement | null;
+  const stage = document.getElementById('zoom-stage') as HTMLElement | null;
+
+  const ZOOM = 2.35;
+
+  function setZoom(active: boolean, xPct: number, yPct: number) {
+    if (!main || !stage) return;
+    if (active) {
+      stage.classList.add('is-zooming');
+      main.style.transformOrigin = `${xPct}% ${yPct}%`;
+      main.style.transform = `scale(${ZOOM})`;
+    } else {
+      stage.classList.remove('is-zooming');
+      main.style.transform = 'scale(1)';
+      main.style.transformOrigin = 'center center';
+    }
+  }
+
+  function pointToPct(clientX: number, clientY: number) {
+    if (!stage) return { x: 50, y: 50 };
+    const r = stage.getBoundingClientRect();
+    const x = ((clientX - r.left) / r.width) * 100;
+    const y = ((clientY - r.top) / r.height) * 100;
+    return {
+      x: Math.max(0, Math.min(100, x)),
+      y: Math.max(0, Math.min(100, y)),
+    };
+  }
+
+  if (stage && main) {
+    // Desktop: hover follows cursor
+    stage.addEventListener('pointerenter', (e) => {
+      if (e.pointerType === 'touch') return;
+      const { x, y } = pointToPct(e.clientX, e.clientY);
+      setZoom(true, x, y);
+    });
+    stage.addEventListener('pointermove', (e) => {
+      if (e.pointerType === 'touch') return;
+      if (!stage.classList.contains('is-zooming')) return;
+      const { x, y } = pointToPct(e.clientX, e.clientY);
+      setZoom(true, x, y);
+    });
+    stage.addEventListener('pointerleave', (e) => {
+      if (e.pointerType === 'touch') return;
+      setZoom(false, 50, 50);
+    });
+
+    // Touch: press and drag
+    let touching = false;
+    stage.addEventListener(
+      'touchstart',
+      (e) => {
+        if (e.touches.length !== 1) return;
+        touching = true;
+        const t = e.touches[0];
+        const { x, y } = pointToPct(t.clientX, t.clientY);
+        setZoom(true, x, y);
+      },
+      { passive: true }
+    );
+    stage.addEventListener(
+      'touchmove',
+      (e) => {
+        if (!touching || e.touches.length !== 1) return;
+        const t = e.touches[0];
+        const { x, y } = pointToPct(t.clientX, t.clientY);
+        setZoom(true, x, y);
+      },
+      { passive: true }
+    );
+    const endTouch = () => {
+      touching = false;
+      setZoom(false, 50, 50);
+    };
+    stage.addEventListener('touchend', endTouch);
+    stage.addEventListener('touchcancel', endTouch);
+  }
+
   document.querySelectorAll('.thumb-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       const src = (btn as HTMLElement).dataset.src;
       if (main && src) {
         main.style.opacity = '0.5';
         main.src = src;
-        main.onload = () => { main.style.opacity = '1'; };
+        main.onload = () => {
+          main.style.opacity = '1';
+        };
       }
-      document.querySelectorAll('.thumb-btn').forEach((b) => b.classList.remove('border-brand-500'));
-      btn.classList.add('border-brand-500');
+      document.querySelectorAll('.thumb-btn').forEach((b) => {
+        b.classList.remove('border-amber-400');
+        b.classList.add('border-amber-500/20');
+      });
+      btn.classList.add('border-amber-400');
+      btn.classList.remove('border-amber-500/20');
     });
   });
-  document.querySelector('.thumb-btn')?.classList.add('border-brand-500');
+  document.querySelector('.thumb-btn')?.classList.add('border-amber-400');
 
-  document.getElementById('add-to-cart')?.addEventListener('click', (e) => {
+  // Variantes: seleccionar primera opción por defecto
+  const selected: Record<string, string> = {};
+  function updateVariantLabels() {
+    document.querySelectorAll('.variant-label').forEach((el) => {
+      const name = (el as HTMLElement).dataset.variant || '';
+      el.textContent = selected[name] || '—';
+    });
+  }
+  document.querySelectorAll('.variant-opt').forEach((btn) => {
+    const el = btn as HTMLElement;
+    if (el.dataset.default === '1') {
+      const v = el.dataset.variant!;
+      const val = el.dataset.value!;
+      selected[v] = val;
+      el.classList.add('bg-amber-500/20', 'border-amber-400', 'text-amber-100');
+    }
+    el.addEventListener('click', () => {
+      const v = el.dataset.variant!;
+      const val = el.dataset.value!;
+      selected[v] = val;
+      document.querySelectorAll(`.variant-opt[data-variant="${v}"]`).forEach((b) => {
+        b.classList.remove('bg-amber-500/20', 'border-amber-400', 'text-amber-100');
+      });
+      el.classList.add('bg-amber-500/20', 'border-amber-400', 'text-amber-100');
+      updateVariantLabels();
+    });
+  });
+  updateVariantLabels();
+
+  document.getElementById('add-to-cart')?.addEventListener('click', async (e) => {
     const btn = e.currentTarget as HTMLButtonElement;
+    const variantSuffix = Object.entries(selected)
+      .map(([k, v]) => `${k}: ${v}`)
+      .join(' · ');
+    const baseName = btn.dataset.name!;
     const item = {
-      id: btn.dataset.id!,
-      name: btn.dataset.name!,
+      id: btn.dataset.id! + (variantSuffix ? `::${variantSuffix}` : ''),
+      name: variantSuffix ? `${baseName} (${variantSuffix})` : baseName,
       price: Number(btn.dataset.price),
       image: btn.dataset.image!,
       slug: btn.dataset.slug!,
       qty: 1,
+      variants: { ...selected },
     };
+    const variantLabel = Object.entries(selected)
+      .map(([k, v]) => `${k}: ${v}`)
+      .join(' · ');
+
+    try {
+      const inv = await fetch('/api/inventory/reserve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'reserve',
+          productId: item.id.split('::')[0],
+          variantLabel: variantLabel || undefined,
+          qty: 1,
+        }),
+      });
+      const invData = await inv.json();
+      if (!inv.ok || invData.ok === false) {
+        alert(invData.message || invData.error || 'Sin stock para esta variante');
+        return;
+      }
+    } catch {
+      /* si falla la API, permitir carrito local (demo) */
+    }
+
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    const existing = cart.find((i: any) => i.id === item.id);
+    const existing = cart.find((i: { id: string }) => i.id === item.id);
     if (existing) existing.qty += 1;
     else cart.push(item);
     localStorage.setItem('cart', JSON.stringify(cart));
     window.dispatchEvent(new Event('cart-updated'));
     btn.textContent = '✓ Agregado';
-    btn.classList.add('!bg-green-600');
     setTimeout(() => {
       btn.textContent = '🛒 Agregar al carrito';
-      btn.classList.remove('!bg-green-600');
     }, 1500);
   });
 </script>

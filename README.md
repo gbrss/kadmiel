@@ -339,3 +339,12 @@ Se muestra en ficha de producto, carrito y checkout.
    kadmiel.cl  ·  hecho con Astro + Cloudflare + WebPay
   ═══════════════════════════════════════════════════════════
 ```
+
+## Inventario, proveedor y tallas
+
+- API proveedor demo: `GET/POST /api/supplier`
+- Inventario por SKU: `GET/POST /api/inventory`
+- Panel: `/admin/inventario`
+- Tablas de tallas: ficha de producto + `src/data/sizeCharts.ts`
+
+Detalle: [docs/INVENTARIO.md](docs/INVENTARIO.md)
