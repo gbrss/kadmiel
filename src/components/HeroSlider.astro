@@ -241,17 +241,17 @@ const slides = [
   }
 
   .hero-nav {
+    display: none; /* móvil: se navega con swipe y puntos */
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 20;
+    z-index: 30;
     width: 2.75rem;
     height: 2.75rem;
     border-radius: 9999px;
     background: rgba(0, 0, 0, 0.45);
     border: 1px solid rgba(212, 175, 55, 0.35);
     color: #f5e6c8;
-    display: flex;
     align-items: center;
     justify-content: center;
     backdrop-filter: blur(8px);
@@ -265,6 +265,7 @@ const slides = [
   .hero-prev { left: 0.75rem; }
   .hero-next { right: 0.75rem; }
   @media (min-width: 768px) {
+    .hero-nav { display: flex; }
     .hero-prev { left: 1.5rem; }
     .hero-next { right: 1.5rem; }
   }
