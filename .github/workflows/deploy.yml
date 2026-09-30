@@ -39,6 +39,9 @@ jobs:
           WEBPAY_ENV: ${{ secrets.WEBPAY_ENV }}
           WEBPAY_COMMERCE_CODE: ${{ secrets.WEBPAY_COMMERCE_CODE }}
           WEBPAY_API_KEY: ${{ secrets.WEBPAY_API_KEY }}
+          FLOW_ENV: ${{ secrets.FLOW_ENV }}
+          FLOW_API_KEY: ${{ secrets.FLOW_API_KEY }}
+          FLOW_SECRET_KEY: ${{ secrets.FLOW_SECRET_KEY }}
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
