@@ -3,91 +3,88 @@ import Layout from '../layouts/Layout.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 ---
-<Layout title="Checkout — kadmiel.cl">
+<Layout title="Checkout — KADMIEL">
   <Header />
-  <main class="max-w-2xl mx-auto px-4 sm:px-6 py-8">
-    <h1 class="text-2xl font-bold text-gray-900 mb-6">Finalizar compra</h1>
+  <main class="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    <h1 class="text-xl sm:text-2xl font-bold text-stone-50 mb-5">Finalizar compra</h1>
 
-    <div id="checkout-empty" class="hidden text-center py-12">
-      <p class="text-gray-500 mb-4">No hay productos en el carrito</p>
+    <div id="checkout-empty" class="hidden text-center py-12 panel p-8">
+      <p class="text-stone-400 mb-4">No hay productos en el carrito</p>
       <a href="/" class="btn-primary">Volver a la tienda</a>
     </div>
 
-    <div id="checkout-form" class="hidden space-y-6">
-      <!-- Resumen -->
-      <div class="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 class="font-semibold text-gray-900 mb-4">Resumen del pedido</h2>
-        <div id="order-summary" class="space-y-2 text-sm"></div>
-        <div class="border-t border-gray-100 mt-4 pt-3 space-y-2 text-sm">
-          <div class="flex justify-between text-gray-500">
-            <span>Costo proveedor est. (60%)</span>
-            <span id="order-cost">$0</span>
+    <div id="checkout-form" class="hidden space-y-5">
+      <div class="panel p-4 sm:p-6 overflow-hidden">
+        <h2 class="font-semibold text-stone-100 mb-4">Resumen del pedido</h2>
+        <ul id="order-summary" class="divide-y divide-amber-500/10"></ul>
+        <div class="border-t border-amber-500/20 mt-3 pt-3 space-y-2 text-sm">
+          <div class="flex justify-between gap-3 text-stone-400">
+            <span class="min-w-0">Costo proveedor est. (60%)</span>
+            <span id="order-cost" class="shrink-0 tabular-nums">$0</span>
           </div>
-          <div class="flex justify-between text-emerald-700 font-medium">
-            <span>Comisión tienda 40%</span>
-            <span id="order-commission">$0</span>
+          <div class="flex justify-between gap-3 text-amber-400 font-medium">
+            <span class="min-w-0">Comisión tienda 40%</span>
+            <span id="order-commission" class="shrink-0 tabular-nums">$0</span>
           </div>
-          <div class="flex justify-between items-center pt-2 border-t border-gray-100">
-            <span class="font-semibold text-base">Total a pagar</span>
-            <span id="order-total" class="text-xl font-bold text-brand-700">$0</span>
+          <div class="flex justify-between items-center gap-3 pt-2 border-t border-amber-500/15">
+            <span class="font-semibold text-base text-stone-100">Total a pagar</span>
+            <span id="order-total" class="text-lg sm:text-xl font-bold text-amber-400 shrink-0 tabular-nums">$0</span>
           </div>
         </div>
       </div>
 
-      <!-- Datos envío -->
-      <div class="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 class="font-semibold text-gray-900 mb-4">Datos de envío</h2>
+      <div class="panel p-4 sm:p-6">
+        <h2 class="font-semibold text-stone-100 mb-4">Datos de envío</h2>
         <form id="pay-form" class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre completo</label>
-            <input type="text" name="name" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" placeholder="Juan Pérez" />
+            <label class="block text-sm font-medium text-stone-300 mb-1">Nombre completo</label>
+            <input type="text" name="name" required autocomplete="name" class="checkout-input" placeholder="Juan Pérez" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input type="email" name="email" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" placeholder="juan@email.com" />
+            <label class="block text-sm font-medium text-stone-300 mb-1">Email</label>
+            <input type="email" name="email" required autocomplete="email" class="checkout-input" placeholder="juan@email.com" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-            <input type="tel" name="phone" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" placeholder="+56 9 1234 5678" />
+            <label class="block text-sm font-medium text-stone-300 mb-1">Teléfono</label>
+            <input type="tel" name="phone" required autocomplete="tel" class="checkout-input" placeholder="+56 9 1234 5678" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
-            <input type="text" name="address" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" placeholder="Calle, número, depto" />
+            <label class="block text-sm font-medium text-stone-300 mb-1">Dirección</label>
+            <input type="text" name="address" required autocomplete="street-address" class="checkout-input" placeholder="Calle, número, depto" />
           </div>
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Ciudad</label>
-              <input type="text" name="city" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" placeholder="Santiago" />
+              <label class="block text-sm font-medium text-stone-300 mb-1">Ciudad</label>
+              <input type="text" name="city" required class="checkout-input" placeholder="Santiago" />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Región</label>
-              <input type="text" name="region" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none" placeholder="Metropolitana" />
+              <label class="block text-sm font-medium text-stone-300 mb-1">Región</label>
+              <input type="text" name="region" required class="checkout-input" placeholder="Metropolitana" />
             </div>
           </div>
 
-          <!-- Método de pago -->
-          <div class="pt-4 border-t border-gray-100">
-            <h3 class="font-semibold text-gray-900 mb-3">Método de pago</h3>
-            <label class="flex items-center gap-3 p-4 rounded-xl border-2 border-brand-500 bg-brand-50 cursor-pointer">
-              <input type="radio" name="payment" value="webpay" checked class="text-brand-600" />
-              <div class="flex-1">
-                <div class="font-medium text-gray-900">WebPay Plus</div>
-                <div class="text-xs text-gray-500">Tarjetas de crédito y débito · Transbank</div>
+          <div class="pt-4 border-t border-amber-500/15">
+            <h3 class="font-semibold text-stone-100 mb-3">Método de pago</h3>
+            <label class="flex items-start gap-3 p-3 sm:p-4 rounded-xl border border-amber-500/40 bg-amber-500/10 cursor-pointer">
+              <input type="radio" name="payment" value="webpay" checked class="mt-1 accent-amber-500" />
+              <div class="min-w-0 flex-1">
+                <div class="font-medium text-stone-100">WebPay Plus</div>
+                <div class="text-xs text-stone-400 mt-0.5">Tarjetas de crédito y débito · Transbank</div>
               </div>
-              <span class="text-2xl" aria-hidden="true">💳</span>
+              <span class="text-xl shrink-0" aria-hidden="true">💳</span>
             </label>
-            <p class="mt-2 text-xs text-gray-500">
-              Serás redirigido a la pasarela segura de Transbank. No almacenamos datos de tu tarjeta.
+            <p class="mt-2 text-xs text-stone-500 leading-relaxed">
+              Serás redirigido a la pasarela segura de Transbank.
             </p>
-            <div class="mt-3 p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-amber-900">
-              <strong>Modo integración (pruebas):</strong>
-              Visa <code class="bg-white px-1 rounded">4051885600446623</code> · CVV <code class="bg-white px-1 rounded">123</code> ·
-              RUT <code class="bg-white px-1 rounded">11.111.111-1</code> · clave <code class="bg-white px-1 rounded">123</code>
+            <div class="mt-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/25 text-xs text-amber-200/90 leading-relaxed break-words">
+              <strong class="text-amber-300">Modo integración:</strong>
+              Visa <code class="bg-black/40 px-1 rounded text-[11px]">4051885600446623</code>
+              · CVV <code class="bg-black/40 px-1 rounded text-[11px]">123</code>
+              · RUT <code class="bg-black/40 px-1 rounded text-[11px]">11.111.111-1</code>
             </div>
           </div>
 
-          <p id="pay-error" class="hidden text-sm text-red-600"></p>
-
+          <p id="pay-error" class="hidden text-sm text-red-400"></p>
           <button type="submit" id="pay-btn" class="btn-primary w-full py-3 text-base">
             Pagar con WebPay
           </button>
@@ -98,124 +95,112 @@ import Footer from '../components/Footer.astro';
   <Footer />
 </Layout>
 
+<style>
+  .order-line {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.65rem 0;
+  }
+  .order-line-name {
+    min-width: 0;
+    flex: 1 1 auto;
+    color: #d6d3d1;
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+  .order-line-price {
+    flex: 0 0 auto;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    color: #f5e6c8;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    text-align: right;
+  }
+</style>
+
 <script>
   const COMMISSION = 0.4;
-
   function fmt(n: number) {
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 }).format(n);
   }
-
-  function getCart(): { id: string; name: string; price: number; qty: number; image?: string }[] {
-    try {
-      return JSON.parse(localStorage.getItem('cart') || '[]');
-    } catch {
-      return [];
-    }
+  function getCart(): { id: string; name: string; price: number; qty: number }[] {
+    try { return JSON.parse(localStorage.getItem('cart') || '[]'); } catch { return []; }
   }
-
+  function escapeHtml(s: string) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
   function render() {
     const cart = getCart();
     const empty = document.getElementById('checkout-empty')!;
     const form = document.getElementById('checkout-form')!;
-
     if (!cart.length) {
       empty.classList.remove('hidden');
       form.classList.add('hidden');
       return;
     }
-
     empty.classList.add('hidden');
     form.classList.remove('hidden');
-
     const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
     const commission = Math.round(total * COMMISSION);
     const cost = total - commission;
-
-    const summary = document.getElementById('order-summary')!;
-    summary.innerHTML = cart
-      .map(
-        (i) =>
-          `<div class="flex justify-between gap-2"><span class="text-gray-700 truncate">${i.qty}× ${i.name}</span><span class="font-medium whitespace-nowrap">${fmt(i.price * i.qty)}</span></div>`
-      )
+    document.getElementById('order-summary')!.innerHTML = cart
+      .map((i) => `<li class="order-line"><span class="order-line-name">${i.qty}× ${escapeHtml(i.name)}</span><span class="order-line-price">${fmt(i.price * i.qty)}</span></li>`)
       .join('');
-
     document.getElementById('order-cost')!.textContent = fmt(cost);
     document.getElementById('order-commission')!.textContent = fmt(commission);
     document.getElementById('order-total')!.textContent = fmt(total);
   }
-
   render();
-
   const payForm = document.getElementById('pay-form') as HTMLFormElement;
   payForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = document.getElementById('pay-btn') as HTMLButtonElement;
     const errEl = document.getElementById('pay-error')!;
     errEl.classList.add('hidden');
-    errEl.textContent = '';
-
     const cart = getCart();
     if (!cart.length) {
       errEl.textContent = 'El carrito está vacío';
       errEl.classList.remove('hidden');
       return;
     }
-
     const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
     const buyOrder = `DS${Date.now()}`.slice(0, 26);
     const sessionId = `S${Date.now()}`.slice(0, 61);
-
-    // Guardar datos de envío para referencia post-pago
     const fd = new FormData(payForm);
     try {
-      sessionStorage.setItem(
-        'checkout_shipping',
-        JSON.stringify({
-          name: fd.get('name'),
-          email: fd.get('email'),
-          phone: fd.get('phone'),
-          address: fd.get('address'),
-          city: fd.get('city'),
-          region: fd.get('region'),
-          buyOrder,
-          items: cart,
-          total,
-        })
-      );
-    } catch {
-      /* ignore */
-    }
-
+      sessionStorage.setItem('checkout_shipping', JSON.stringify({
+        name: fd.get('name'), email: fd.get('email'), phone: fd.get('phone'),
+        address: fd.get('address'), city: fd.get('city'), region: fd.get('region'),
+        buyOrder, items: cart, total,
+      }));
+    } catch {}
     btn.disabled = true;
     btn.textContent = 'Conectando con WebPay…';
-
     try {
       const res = await fetch('/api/webpay/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: total, buyOrder, sessionId }),
       });
-
       const data = await res.json();
-
-      if (!res.ok || !data.token || !data.url) {
-        throw new Error(data.error || 'No se pudo iniciar el pago');
-      }
-
-      // Redirección POST a Transbank (formulario obligatorio)
-      const form = document.createElement('form');
-      form.method = 'POST';
-      form.action = data.url;
+      if (!res.ok || !data.token || !data.url) throw new Error(data.error || 'No se pudo iniciar el pago');
+      const formEl = document.createElement('form');
+      formEl.method = 'POST';
+      formEl.action = data.url;
       const input = document.createElement('input');
       input.type = 'hidden';
       input.name = 'token_ws';
       input.value = data.token;
-      form.appendChild(input);
-      document.body.appendChild(form);
-      form.submit();
+      formEl.appendChild(input);
+      document.body.appendChild(formEl);
+      formEl.submit();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Error de conexión';
-      errEl.textContent = message;
+      errEl.textContent = err instanceof Error ? err.message : 'Error de conexión';
       errEl.classList.remove('hidden');
       btn.disabled = false;
       btn.textContent = 'Pagar con WebPay';

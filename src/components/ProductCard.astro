@@ -5,24 +5,32 @@ const { product } = Astro.props;
 const discount = product.originalPrice ? Math.round((1 - product.price / product.originalPrice) * 100) : 0;
 ---
 <a href={`/producto/${product.slug}`} class="card group block">
-  <div class="relative aspect-square bg-gray-100 overflow-hidden">
-    <img src={product.image} alt={product.name} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+  <div class="relative aspect-square bg-ink-800 overflow-hidden">
+    <img
+      src={product.image}
+      alt={product.name}
+      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+      loading="lazy"
+    />
     {discount > 0 && (
-      <span class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">-{discount}%</span>
+      <span class="absolute top-2 left-2 bg-gradient-to-r from-amber-200 to-amber-500 text-black text-xs font-bold px-2.5 py-1 rounded-full shadow">
+        -{discount}%
+      </span>
     )}
   </div>
   <div class="p-4">
-    <h3 class="font-medium text-sm text-gray-900 line-clamp-2 mb-2 group-hover:text-brand-600 transition-colors">{product.name}</h3>
+    <h3 class="font-medium text-sm text-stone-100 line-clamp-2 mb-2 group-hover:text-amber-300 transition-colors">
+      {product.name}
+    </h3>
     <div class="flex items-center gap-1 mb-2">
       <span class="text-amber-400 text-sm">{'★'.repeat(Math.round(product.rating))}</span>
-      <span class="text-xs text-gray-500">({product.reviews.toLocaleString('es-CL')})</span>
+      <span class="text-xs text-stone-500">({product.reviews.toLocaleString('es-CL')})</span>
     </div>
-    <div class="flex items-baseline gap-2">
-      <span class="text-lg font-bold text-brand-700">{formatPrice(product.price)}</span>
+    <div class="flex items-baseline gap-2 flex-wrap">
+      <span class="font-bold text-amber-400">{formatPrice(product.price)}</span>
       {product.originalPrice && (
-        <span class="text-sm text-gray-400 line-through">{formatPrice(product.originalPrice)}</span>
+        <span class="text-xs text-stone-500 line-through">{formatPrice(product.originalPrice)}</span>
       )}
     </div>
-    <p class="text-xs text-gray-500 mt-1">{product.sales.toLocaleString('es-CL')}+ vendidos</p>
   </div>
 </a>

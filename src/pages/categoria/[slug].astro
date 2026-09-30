@@ -17,17 +17,17 @@ const prods = getProductsByCategory(slug!);
 <Layout title={`${category.name} — kadmiel.cl`} description={category.description}>
   <Header />
   <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-    <nav class="text-sm text-gray-500 mb-4">
-      <a href="/" class="hover:text-brand-600">Inicio</a>
+    <nav class="text-sm text-stone-400 mb-4">
+      <a href="/" class="hover:text-amber-400">Inicio</a>
       <span class="mx-2">/</span>
-      <span class="text-gray-800">{category.name}</span>
+      <span class="text-stone-200">{category.name}</span>
     </nav>
     <div class="flex items-center gap-4 mb-8">
       <div class="w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden shadow border border-gray-100 shrink-0"><img src={category.image} alt={category.name} class="w-full h-full object-cover" /></div>
       <div>
-        <h1 class="text-3xl font-bold text-gray-900">{category.name}</h1>
-        <p class="text-gray-500 mt-1">{category.description}</p>
-        <p class="text-sm text-gray-400 mt-1">{prods.length} productos</p>
+        <h1 class="text-3xl font-bold text-stone-50">{category.name}</h1>
+        <p class="text-stone-400 mt-1">{category.description}</p>
+        <p class="text-sm text-stone-500 mt-1">{prods.length} productos</p>
       </div>
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">

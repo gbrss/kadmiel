@@ -8,41 +8,41 @@ import { categories, products } from '../data/products';
 
 const topProducts = [...products].sort((a, b) => b.sales - a.sales).slice(0, 8);
 ---
-<Layout title="kadmiel.cl — Productos con envío a Chile">
+<Layout title="KADMIEL — Productos con envío a Chile">
   <Header />
   <main>
     <HeroSlider />
 
-    <!-- Categories with real images -->
     <section id="categorias" class="max-w-7xl mx-auto px-4 sm:px-6 py-14">
       <div class="flex items-end justify-between gap-4 mb-8">
         <div>
-          <p class="text-amber-600 font-semibold text-sm tracking-wide uppercase mb-1">Catálogo</p>
-          <h2 class="text-2xl md:text-3xl font-bold text-gray-900">Categorías</h2>
+          <p class="section-eyebrow mb-1">Catálogo</p>
+          <h2 class="section-title">Categorías</h2>
         </div>
-        <a href="#top-ventas" class="text-sm font-medium text-brand-600 hover:text-brand-700 hidden sm:inline">Ver destacados →</a>
+        <a href="#top-ventas" class="text-sm font-medium text-amber-400/90 hover:text-amber-300 hidden sm:inline">
+          Ver destacados →
+        </a>
       </div>
       <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4">
         {categories.map((c) => (
           <a
             href={`/categoria/${c.slug}`}
-            class="group relative rounded-2xl overflow-hidden aspect-[4/5] sm:aspect-[3/4] shadow-sm border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+            class="group relative rounded-2xl overflow-hidden aspect-[4/5] sm:aspect-[3/4] border border-amber-500/20 shadow-lg shadow-black/40 hover:border-amber-400/50 hover:-translate-y-1 transition-all duration-300"
           >
             <img
               src={c.image}
               alt={c.name}
               class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
               loading="lazy"
-              decoding="async"
             />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
             <div class="absolute inset-x-0 bottom-0 p-3 md:p-4">
-              <h3 class="font-semibold text-sm md:text-base text-white leading-snug group-hover:text-amber-300 transition-colors">
+              <h3 class="font-semibold text-sm md:text-base text-stone-50 leading-snug group-hover:text-amber-300 transition-colors">
                 {c.name}
               </h3>
-              <p class="text-[11px] md:text-xs text-white/70 mt-1">10 productos</p>
+              <p class="text-[11px] md:text-xs text-stone-400 mt-1">10 productos</p>
             </div>
-            <span class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-amber-400 text-black text-[10px] font-bold px-2 py-0.5 rounded-full">
+            <span class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-r from-amber-200 to-amber-500 text-black text-[10px] font-bold px-2 py-0.5 rounded-full">
               Ver →
             </span>
           </a>
@@ -50,12 +50,14 @@ const topProducts = [...products].sort((a, b) => b.sales - a.sales).slice(0, 8);
       </div>
     </section>
 
-    <!-- Top sales -->
-    <section id="top-ventas" class="bg-white border-y border-gray-100">
+    <section id="top-ventas" class="border-y border-amber-500/15 bg-black/30">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <div class="flex items-center justify-between mb-6">
-          <h2 class="text-2xl font-bold text-gray-900">🔥 Más vendidos</h2>
-          <a href="/categoria/electronica" class="text-sm font-medium text-brand-600 hover:text-brand-700">Ver todos →</a>
+          <div>
+            <p class="section-eyebrow mb-1">Destacados</p>
+            <h2 class="section-title">Más vendidos</h2>
+          </div>
+          <a href="/categoria/electronica" class="text-sm font-medium text-amber-400 hover:text-amber-300">Ver todos →</a>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {topProducts.map((p) => <ProductCard product={p} />)}
@@ -63,23 +65,22 @@ const topProducts = [...products].sort((a, b) => b.sales - a.sales).slice(0, 8);
       </div>
     </section>
 
-    <!-- Trust / features -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 py-14">
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <div class="card p-6 text-center hover:-translate-y-0.5 transition-transform">
-          <div class="text-3xl mb-2">🚚</div>
-          <h3 class="font-semibold text-gray-900 mb-1">Envío a Chile</h3>
-          <p class="text-sm text-gray-500">Productos seleccionados · Despacho a todo el país</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div class="card p-6 text-center">
+          <div class="text-3xl mb-3">🚚</div>
+          <h3 class="font-semibold text-stone-100 mb-1">Envío a Chile</h3>
+          <p class="text-sm text-stone-400">Productos seleccionados · Despacho a todo el país</p>
         </div>
-        <div class="card p-6 text-center hover:-translate-y-0.5 transition-transform">
-          <div class="text-3xl mb-2">💳</div>
-          <h3 class="font-semibold text-gray-900 mb-1">WebPay seguro</h3>
-          <p class="text-sm text-gray-500">Débito y crédito de todos los bancos chilenos</p>
+        <div class="card p-6 text-center">
+          <div class="text-3xl mb-3">💳</div>
+          <h3 class="font-semibold text-stone-100 mb-1">WebPay seguro</h3>
+          <p class="text-sm text-stone-400">Débito y crédito de todos los bancos chilenos</p>
         </div>
-        <div class="card p-6 text-center hover:-translate-y-0.5 transition-transform">
-          <div class="text-3xl mb-2">💬</div>
-          <h3 class="font-semibold text-gray-900 mb-1">WhatsApp</h3>
-          <p class="text-sm text-gray-500">Te atendemos en +56 9 4542 2388</p>
+        <div class="card p-6 text-center">
+          <div class="text-3xl mb-3">💬</div>
+          <h3 class="font-semibold text-stone-100 mb-1">WhatsApp</h3>
+          <p class="text-sm text-stone-400">Te atendemos en +56 9 4542 2388</p>
         </div>
       </div>
     </section>

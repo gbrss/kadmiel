@@ -20,13 +20,13 @@ const isAborted = status === 'aborted';
     {isSuccess ? (
       <div>
         <div class="text-6xl mb-4">✅</div>
-        <h1 class="text-2xl font-bold text-green-700 mb-2">¡Pago exitoso!</h1>
-        <p class="text-gray-600 mb-6">Tu pago con WebPay fue autorizado. Te contactaremos para el envío.</p>
-        <div class="bg-white rounded-xl border border-gray-200 p-6 text-left text-sm space-y-2 mb-6">
-          {order && <div class="flex justify-between"><span class="text-gray-500">Orden</span><span class="font-mono">{order}</span></div>}
-          {amount && <div class="flex justify-between"><span class="text-gray-500">Monto</span><span class="font-semibold">${Number(amount).toLocaleString('es-CL')}</span></div>}
-          {auth && <div class="flex justify-between"><span class="text-gray-500">Autorización</span><span class="font-mono">{auth}</span></div>}
-          {card && <div class="flex justify-between"><span class="text-gray-500">Tarjeta</span><span>**** {card}</span></div>}
+        <h1 class="text-2xl font-bold text-amber-300 mb-2">¡Pago exitoso!</h1>
+        <p class="text-stone-300 mb-6">Tu pago con WebPay fue autorizado. Te contactaremos para el envío.</p>
+        <div class="panel p-6 text-left text-sm space-y-2 mb-6">
+          {order && <div class="flex justify-between"><span class="text-stone-400">Orden</span><span class="font-mono">{order}</span></div>}
+          {amount && <div class="flex justify-between"><span class="text-stone-400">Monto</span><span class="font-semibold">${Number(amount).toLocaleString('es-CL')}</span></div>}
+          {auth && <div class="flex justify-between"><span class="text-stone-400">Autorización</span><span class="font-mono">{auth}</span></div>}
+          {card && <div class="flex justify-between"><span class="text-stone-400">Tarjeta</span><span>**** {card}</span></div>}
         </div>
         <a href="/" class="btn-primary">Volver a la tienda</a>
       </div>
@@ -34,7 +34,7 @@ const isAborted = status === 'aborted';
       <div>
         <div class="text-6xl mb-4">⚠️</div>
         <h1 class="text-2xl font-bold text-amber-600 mb-2">Pago cancelado</h1>
-        <p class="text-gray-600 mb-6">Cancelaste el pago en WebPay. Tu carrito se mantiene intacto.</p>
+        <p class="text-stone-300 mb-6">Cancelaste el pago en WebPay. Tu carrito se mantiene intacto.</p>
         <div class="flex gap-3 justify-center">
           <a href="/checkout" class="btn-primary">Reintentar</a>
           <a href="/carrito" class="btn-secondary">Ver carrito</a>
@@ -44,9 +44,9 @@ const isAborted = status === 'aborted';
       <div>
         <div class="text-6xl mb-4">❌</div>
         <h1 class="text-2xl font-bold text-red-600 mb-2">Pago no completado</h1>
-        <p class="text-gray-600 mb-2">Hubo un problema con el pago en WebPay.</p>
+        <p class="text-stone-300 mb-2">Hubo un problema con el pago en WebPay.</p>
         {(code || msg) && (
-          <p class="text-xs text-gray-400 mb-6 font-mono">
+          <p class="text-xs text-stone-500 mb-6 font-mono">
             {code ? `código: ${code}` : ''} {msg ? `· ${msg}` : ''}
           </p>
         )}
