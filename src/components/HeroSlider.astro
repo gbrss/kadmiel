@@ -1,0 +1,376 @@
+---
+import { categories, products } from '../data/products';
+
+const topByCat = categories.map((c) => {
+  const list = products.filter((p) => p.category === c.id).sort((a, b) => b.sales - a.sales);
+  return {
+    ...c,
+    product: list[0],
+    image: c.image || list[0]?.image,
+  };
+});
+
+const slides = [
+  {
+    id: 'welcome',
+    eyebrow: 'kadmiel.cl',
+    title: 'Descubre lo mejor para ti',
+    subtitle: '100 productos top · Envío a Chile · Pago seguro con WebPay',
+    cta: 'Ver catálogo',
+    href: '#categorias',
+    image: topByCat[0]?.image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1600&q=80',
+    accent: 'from-amber-500/80 to-black/70',
+  },
+  ...topByCat.slice(0, 5).map((c) => ({
+    id: c.id,
+    eyebrow: c.name,
+    title: c.product?.name || c.name,
+    subtitle: c.description,
+    cta: `Ver ${c.name.split(' ')[0]}`,
+    href: `/categoria/${c.slug}`,
+    image: c.image,
+    accent: 'from-black/75 to-amber-900/40',
+  })),
+];
+---
+<section class="hero-slider relative w-full overflow-hidden bg-black" aria-roledescription="carrusel" aria-label="Destacados kadmiel.cl">
+  <div class="hero-track relative h-[min(78vh,640px)] md:h-[min(82vh,700px)]">
+    {slides.map((slide, i) => (
+      <article
+        class:list={['hero-slide absolute inset-0', i === 0 && 'is-active']}
+        data-index={i}
+        aria-hidden={i !== 0}
+      >
+        <div class="absolute inset-0 overflow-hidden">
+          <img
+            src={slide.image}
+            alt=""
+            class="hero-bg-img absolute inset-0 h-full w-full object-cover"
+            loading={i === 0 ? 'eager' : 'lazy'}
+            decoding="async"
+          />
+          <div class={`absolute inset-0 bg-gradient-to-r ${slide.accent}`}></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/30"></div>
+          <!-- particle dots -->
+          <div class="hero-particles pointer-events-none absolute inset-0" aria-hidden="true"></div>
+        </div>
+        <div class="relative z-10 h-full max-w-7xl mx-auto px-4 sm:px-6 flex items-center">
+          <div class="hero-content max-w-xl text-white">
+            <p class="hero-eyebrow text-amber-400 font-semibold tracking-[0.2em] uppercase text-xs md:text-sm mb-3">
+              {slide.eyebrow}
+            </p>
+            <h2 class="hero-title text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4">
+              {slide.title}
+            </h2>
+            <p class="hero-sub text-base md:text-lg text-gray-200 mb-8 max-w-md">
+              {slide.subtitle}
+            </p>
+            <div class="hero-cta flex flex-wrap gap-3">
+              <a href={slide.href} class="btn-accent shadow-lg shadow-amber-500/30 hover:scale-[1.03] transition-transform">
+                {slide.cta}
+              </a>
+              <a href="#top-ventas" class="btn-secondary !bg-white/10 !text-white !border-white/25 hover:!bg-white/20 backdrop-blur-sm">
+                Top ventas
+              </a>
+            </div>
+          </div>
+        </div>
+      </article>
+    ))}
+  </div>
+
+  <!-- Controls -->
+  <button type="button" class="hero-nav hero-prev" aria-label="Slide anterior">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+  </button>
+  <button type="button" class="hero-nav hero-next" aria-label="Slide siguiente">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  </button>
+
+  <!-- Progress + dots -->
+  <div class="absolute bottom-0 left-0 right-0 z-20">
+    <div class="hero-progress h-1 bg-white/10">
+      <div class="hero-progress-bar h-full bg-amber-400 origin-left"></div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <div class="hero-dots flex gap-2" role="tablist" aria-label="Slides">
+        {slides.map((_, i) => (
+          <button
+            type="button"
+            class:list={['hero-dot', i === 0 && 'is-active']}
+            data-index={i}
+            role="tab"
+            aria-selected={i === 0}
+            aria-label={`Ir al slide ${i + 1}`}
+          />
+        ))}
+      </div>
+      <p class="text-white/60 text-xs tabular-nums hidden sm:block">
+        <span class="hero-counter">01</span> / {String(slides.length).padStart(2, '0')}
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-slide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.7s ease, visibility 0.7s;
+  }
+  .hero-slide.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    z-index: 1;
+  }
+  .hero-slide.is-active .hero-bg-img {
+    animation: kenburns 7.5s ease-out forwards;
+  }
+  .hero-slide.is-active .hero-eyebrow {
+    animation: rise 0.7s 0.1s both;
+  }
+  .hero-slide.is-active .hero-title {
+    animation: rise 0.75s 0.2s both;
+  }
+  .hero-slide.is-active .hero-sub {
+    animation: rise 0.75s 0.32s both;
+  }
+  .hero-slide.is-active .hero-cta {
+    animation: rise 0.75s 0.42s both;
+  }
+  @keyframes kenburns {
+    from {
+      transform: scale(1.12) translate3d(0, 0, 0);
+    }
+    to {
+      transform: scale(1) translate3d(0, -1.5%, 0);
+    }
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(28px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .hero-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 9999px;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    transition: background 0.2s, transform 0.2s;
+  }
+  .hero-nav:hover {
+    background: rgba(245, 158, 11, 0.9);
+    color: #000;
+    transform: translateY(-50%) scale(1.05);
+  }
+  .hero-prev {
+    left: 0.75rem;
+  }
+  .hero-next {
+    right: 0.75rem;
+  }
+  @media (min-width: 768px) {
+    .hero-prev {
+      left: 1.5rem;
+    }
+    .hero-next {
+      right: 1.5rem;
+    }
+  }
+  .hero-dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.35);
+    transition: width 0.35s ease, background 0.25s;
+  }
+  .hero-dot.is-active {
+    width: 1.75rem;
+    background: #f59e0b;
+  }
+  .hero-progress-bar {
+    width: 100%;
+    transform: scaleX(0);
+  }
+  .hero-progress-bar.is-running {
+    animation: progress linear forwards;
+  }
+  @keyframes progress {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+  .hero-particles::before,
+  .hero-particles::after {
+    content: '';
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, transparent 70%);
+    animation: float 8s ease-in-out infinite;
+  }
+  .hero-particles::before {
+    top: 15%;
+    right: 12%;
+  }
+  .hero-particles::after {
+    bottom: 20%;
+    left: 8%;
+    animation-delay: -3s;
+    width: 120px;
+    height: 120px;
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0) scale(1);
+      opacity: 0.5;
+    }
+    50% {
+      transform: translateY(-24px) scale(1.15);
+      opacity: 0.85;
+    }
+  }
+</style>
+
+<script>
+  function initHeroSlider() {
+    const root = document.querySelector('.hero-slider');
+    if (!root || (root as HTMLElement).dataset.ready) return;
+    (root as HTMLElement).dataset.ready = '1';
+
+    const slides = Array.from(root.querySelectorAll<HTMLElement>('.hero-slide'));
+    const dots = Array.from(root.querySelectorAll<HTMLElement>('.hero-dot'));
+    const bar = root.querySelector<HTMLElement>('.hero-progress-bar');
+    const counter = root.querySelector('.hero-counter');
+    const prev = root.querySelector('.hero-prev');
+    const next = root.querySelector('.hero-next');
+    const DURATION = 6000;
+    let index = 0;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    let paused = false;
+
+    function go(to: number) {
+      slides[index]?.classList.remove('is-active');
+      slides[index]?.setAttribute('aria-hidden', 'true');
+      dots[index]?.classList.remove('is-active');
+      dots[index]?.setAttribute('aria-selected', 'false');
+
+      index = (to + slides.length) % slides.length;
+
+      slides[index]?.classList.add('is-active');
+      slides[index]?.setAttribute('aria-hidden', 'false');
+      dots[index]?.classList.add('is-active');
+      dots[index]?.setAttribute('aria-selected', 'true');
+      if (counter) counter.textContent = String(index + 1).padStart(2, '0');
+      restartProgress();
+    }
+
+    function restartProgress() {
+      if (!bar) return;
+      bar.classList.remove('is-running');
+      bar.style.animationDuration = '';
+      void bar.offsetWidth;
+      if (!paused) {
+        bar.style.animationDuration = `${DURATION}ms`;
+        bar.classList.add('is-running');
+      }
+    }
+
+    function schedule() {
+      if (timer) clearTimeout(timer);
+      if (paused) return;
+      timer = setTimeout(() => go(index + 1), DURATION);
+      restartProgress();
+    }
+
+    function pause() {
+      paused = true;
+      if (timer) clearTimeout(timer);
+      bar?.classList.remove('is-running');
+    }
+
+    function resume() {
+      paused = false;
+      schedule();
+    }
+
+    prev?.addEventListener('click', () => {
+      go(index - 1);
+      schedule();
+    });
+    next?.addEventListener('click', () => {
+      go(index + 1);
+      schedule();
+    });
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => {
+        go(i);
+        schedule();
+      });
+    });
+
+    root.addEventListener('mouseenter', pause);
+    root.addEventListener('mouseleave', resume);
+    root.addEventListener('focusin', pause);
+    root.addEventListener('focusout', resume);
+
+    // Touch swipe
+    let startX = 0;
+    root.addEventListener(
+      'touchstart',
+      (e) => {
+        startX = e.touches[0].clientX;
+        pause();
+      },
+      { passive: true }
+    );
+    root.addEventListener(
+      'touchend',
+      (e) => {
+        const dx = e.changedTouches[0].clientX - startX;
+        if (Math.abs(dx) > 50) go(dx < 0 ? index + 1 : index - 1);
+        resume();
+      },
+      { passive: true }
+    );
+
+    document.addEventListener('keydown', (e) => {
+      if (!root.matches(':hover') && document.activeElement !== document.body) return;
+      if (e.key === 'ArrowLeft') {
+        go(index - 1);
+        schedule();
+      }
+      if (e.key === 'ArrowRight') {
+        go(index + 1);
+        schedule();
+      }
+    });
+
+    schedule();
+  }
+
+  initHeroSlider();
+  document.addEventListener('astro:page-load', initHeroSlider);
+</script>

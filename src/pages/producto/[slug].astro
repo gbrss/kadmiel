@@ -1,0 +1,162 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { getProductBySlug, getProductsByCategory, formatPrice, products, getCategoryBySlug, getCommissionAmount, getProductCost, getCommissionPercentLabel } from '../../data/products';
+
+export function getStaticPaths() {
+  return products.map((p) => ({ params: { slug: p.slug } }));
+}
+
+const { slug } = Astro.params;
+const product = getProductBySlug(slug!);
+if (!product) return Astro.redirect('/');
+const category = getCategoryBySlug(product.category);
+const related = getProductsByCategory(product.category).filter((p) => p.id !== product.id).slice(0, 4);
+const discount = product.originalPrice ? Math.round((1 - product.price / product.originalPrice) * 100) : 0;
+const gallery = product.images?.length ? product.images : [product.image];
+---
+<Layout title={`${product.name} — kadmiel.cl`} description={product.description}>
+  <Header />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <nav class="text-sm text-gray-500 mb-6">
+      <a href="/" class="hover:text-brand-600">Inicio</a>
+      <span class="mx-2">/</span>
+      {category && <><a href={`/categoria/${category.slug}`} class="hover:text-brand-600">{category.name}</a><span class="mx-2">/</span></>}
+      <span class="text-gray-800 line-clamp-1">{product.name}</span>
+    </nav>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+      <!-- Galería -->
+      <div>
+        <div class="aspect-square bg-gray-100 rounded-2xl overflow-hidden mb-3">
+          <img
+            id="main-image"
+            src={gallery[0]}
+            alt={product.name}
+            class="w-full h-full object-cover transition-opacity duration-200"
+          />
+        </div>
+        {gallery.length > 1 && (
+          <div class="grid grid-cols-3 gap-2">
+            {gallery.map((src, i) => (
+              <button
+                type="button"
+                class="thumb-btn aspect-square rounded-xl overflow-hidden border-2 border-transparent hover:border-brand-400 focus:border-brand-500 focus:outline-none bg-gray-100"
+                data-src={src}
+                data-index={i}
+              >
+                <img src={src} alt={`${product.name} — foto ${i + 1}`} class="w-full h-full object-cover" loading="lazy" />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <!-- Info -->
+      <div>
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">{product.name}</h1>
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="text-amber-400">{'★'.repeat(Math.round(product.rating))}</span>
+          <span class="text-sm text-gray-500">{product.rating} · {product.reviews.toLocaleString('es-CL')} reseñas</span>
+          <span class="text-sm text-gray-400">·</span>
+          <span class="text-sm text-green-600 font-medium">{product.sales.toLocaleString('es-CL')}+ vendidos</span>
+        </div>
+        <div class="flex items-baseline gap-3 mb-4">
+          <span class="text-3xl font-bold text-brand-700">{formatPrice(product.price)}</span>
+          {product.originalPrice && (
+            <>
+              <span class="text-lg text-gray-400 line-through">{formatPrice(product.originalPrice)}</span>
+              <span class="bg-red-100 text-red-700 text-sm font-bold px-2 py-0.5 rounded">-{discount}%</span>
+            </>
+          )}
+        </div>
+        <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4 mb-6 text-sm">
+          <p class="font-semibold text-emerald-800 mb-2">Comisión por venta: {getCommissionPercentLabel()}</p>
+          <div class="grid grid-cols-2 gap-2 text-emerald-900/80">
+            <span>Costo estimado proveedor</span>
+            <span class="text-right font-medium">{formatPrice(getProductCost(product.price))}</span>
+            <span>Tu comisión / margen</span>
+            <span class="text-right font-bold text-emerald-700">{formatPrice(getCommissionAmount(product.price))}</span>
+          </div>
+        </div>
+        <p class="text-gray-600 leading-relaxed mb-6 whitespace-pre-line">{product.description}</p>
+        <div class="flex items-center gap-2 mb-6 text-sm text-gray-500">
+          <span class="inline-flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full"></span> En stock ({product.stock})</span>
+          <span>·</span>
+          <span>Envío a Chile</span>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <button
+            id="add-to-cart"
+            data-id={product.id}
+            data-name={product.name}
+            data-price={product.price}
+            data-image={product.image}
+            data-slug={product.slug}
+            class="btn-primary flex-1 sm:flex-none min-w-[180px]"
+          >
+            🛒 Agregar al carrito
+          </button>
+          <a href="/carrito" class="btn-secondary">Ver carrito</a>
+        </div>
+        <div class="mt-6 flex flex-wrap gap-2">
+          {product.tags.map((t) => (
+            <span class="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">#{t}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    {related.length > 0 && (
+      <section>
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Productos relacionados</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          {related.map((p) => <ProductCard product={p} />)}
+        </div>
+      </section>
+    )}
+  </main>
+  <Footer />
+</Layout>
+<script>
+  const main = document.getElementById('main-image') as HTMLImageElement | null;
+  document.querySelectorAll('.thumb-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const src = (btn as HTMLElement).dataset.src;
+      if (main && src) {
+        main.style.opacity = '0.5';
+        main.src = src;
+        main.onload = () => { main.style.opacity = '1'; };
+      }
+      document.querySelectorAll('.thumb-btn').forEach((b) => b.classList.remove('border-brand-500'));
+      btn.classList.add('border-brand-500');
+    });
+  });
+  document.querySelector('.thumb-btn')?.classList.add('border-brand-500');
+
+  document.getElementById('add-to-cart')?.addEventListener('click', (e) => {
+    const btn = e.currentTarget as HTMLButtonElement;
+    const item = {
+      id: btn.dataset.id!,
+      name: btn.dataset.name!,
+      price: Number(btn.dataset.price),
+      image: btn.dataset.image!,
+      slug: btn.dataset.slug!,
+      qty: 1,
+    };
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const existing = cart.find((i: any) => i.id === item.id);
+    if (existing) existing.qty += 1;
+    else cart.push(item);
+    localStorage.setItem('cart', JSON.stringify(cart));
+    window.dispatchEvent(new Event('cart-updated'));
+    btn.textContent = '✓ Agregado';
+    btn.classList.add('!bg-green-600');
+    setTimeout(() => {
+      btn.textContent = '🛒 Agregar al carrito';
+      btn.classList.remove('!bg-green-600');
+    }, 1500);
+  });
+</script>

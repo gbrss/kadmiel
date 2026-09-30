@@ -1,0 +1,67 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+
+const status = Astro.url.searchParams.get('status');
+const amount = Astro.url.searchParams.get('amount');
+const order = Astro.url.searchParams.get('order');
+const auth = Astro.url.searchParams.get('auth');
+const card = Astro.url.searchParams.get('card');
+const code = Astro.url.searchParams.get('code');
+const msg = Astro.url.searchParams.get('msg');
+
+const isSuccess = status === 'success';
+const isAborted = status === 'aborted';
+---
+<Layout title={isSuccess ? 'Pago exitoso' : 'Pago no completado'}>
+  <Header />
+  <main class="max-w-lg mx-auto px-4 py-16 text-center">
+    {isSuccess ? (
+      <div>
+        <div class="text-6xl mb-4">✅</div>
+        <h1 class="text-2xl font-bold text-green-700 mb-2">¡Pago exitoso!</h1>
+        <p class="text-gray-600 mb-6">Tu pago con WebPay fue autorizado. Te contactaremos para el envío.</p>
+        <div class="bg-white rounded-xl border border-gray-200 p-6 text-left text-sm space-y-2 mb-6">
+          {order && <div class="flex justify-between"><span class="text-gray-500">Orden</span><span class="font-mono">{order}</span></div>}
+          {amount && <div class="flex justify-between"><span class="text-gray-500">Monto</span><span class="font-semibold">${Number(amount).toLocaleString('es-CL')}</span></div>}
+          {auth && <div class="flex justify-between"><span class="text-gray-500">Autorización</span><span class="font-mono">{auth}</span></div>}
+          {card && <div class="flex justify-between"><span class="text-gray-500">Tarjeta</span><span>**** {card}</span></div>}
+        </div>
+        <a href="/" class="btn-primary">Volver a la tienda</a>
+      </div>
+    ) : isAborted ? (
+      <div>
+        <div class="text-6xl mb-4">⚠️</div>
+        <h1 class="text-2xl font-bold text-amber-600 mb-2">Pago cancelado</h1>
+        <p class="text-gray-600 mb-6">Cancelaste el pago en WebPay. Tu carrito se mantiene intacto.</p>
+        <div class="flex gap-3 justify-center">
+          <a href="/checkout" class="btn-primary">Reintentar</a>
+          <a href="/carrito" class="btn-secondary">Ver carrito</a>
+        </div>
+      </div>
+    ) : (
+      <div>
+        <div class="text-6xl mb-4">❌</div>
+        <h1 class="text-2xl font-bold text-red-600 mb-2">Pago no completado</h1>
+        <p class="text-gray-600 mb-2">Hubo un problema con el pago en WebPay.</p>
+        {(code || msg) && (
+          <p class="text-xs text-gray-400 mb-6 font-mono">
+            {code ? `código: ${code}` : ''} {msg ? `· ${msg}` : ''}
+          </p>
+        )}
+        <div class="flex gap-3 justify-center">
+          <a href="/checkout" class="btn-primary">Reintentar</a>
+          <a href="/" class="btn-secondary">Volver</a>
+        </div>
+      </div>
+    )}
+  </main>
+  <Footer />
+</Layout>
+{isSuccess && (
+  <script>
+    localStorage.removeItem('cart');
+    window.dispatchEvent(new Event('cart-updated'));
+  </script>
+)}

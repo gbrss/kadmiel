@@ -1,0 +1,73 @@
+---
+import { categories } from '../data/products';
+---
+<header class="bg-black/95 backdrop-blur border-b border-amber-500/20 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="flex items-center justify-between h-16 md:h-18">
+      <a href="/" class="flex items-center gap-2.5 shrink-0">
+        <img
+          src="/logo-kadmiel.jpg"
+          alt="Kadmiel"
+          class="h-10 w-auto rounded-md object-contain"
+          width="120"
+          height="40"
+        />
+        <span class="font-bold text-lg tracking-wide text-amber-400 hidden sm:inline">kadmiel.cl</span>
+      </a>
+      <nav class="hidden lg:flex items-center gap-1">
+        {categories.slice(0, 6).map((c) => (
+          <a href={`/categoria/${c.slug}`} class="px-3 py-2 text-sm font-medium text-gray-300 hover:text-amber-400 rounded-lg hover:bg-white/5 transition-colors">
+            {c.icon} {c.name.split(' ')[0]}
+          </a>
+        ))}
+        <div class="relative group">
+          <button type="button" class="px-3 py-2 text-sm font-medium text-gray-300 hover:text-amber-400 rounded-lg hover:bg-white/5">Más ▾</button>
+          <div class="absolute right-0 mt-1 w-56 bg-gray-900 rounded-xl shadow-xl border border-gray-700 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+            {categories.slice(6).map((c) => (
+              <a href={`/categoria/${c.slug}`} class="block px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-amber-400">
+                {c.icon} {c.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      </nav>
+      <div class="flex items-center gap-3">
+        <a href="/carrito" class="relative p-2 text-gray-300 hover:text-amber-400 transition-colors" id="cart-btn" aria-label="Carrito">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          <span id="cart-count" class="absolute -top-1 -right-1 bg-amber-500 text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+        </a>
+        <button id="mobile-menu-btn" type="button" class="lg:hidden p-2 text-gray-300" aria-label="Menú">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="mobile-menu" class="hidden lg:hidden border-t border-gray-800 bg-black">
+    <div class="px-4 py-3 space-y-1">
+      {categories.map((c) => (
+        <a href={`/categoria/${c.slug}`} class="block px-3 py-2 text-sm text-gray-300 hover:text-amber-400 rounded-lg hover:bg-white/5">
+          {c.icon} {c.name}
+        </a>
+      ))}
+    </div>
+  </div>
+</header>
+<script>
+  document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
+    document.getElementById('mobile-menu')?.classList.toggle('hidden');
+  });
+  function updateCartCount() {
+    try {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const count = cart.reduce((s: number, i: { qty: number }) => s + i.qty, 0);
+      const el = document.getElementById('cart-count');
+      if (el) {
+        el.textContent = String(count);
+        el.classList.toggle('hidden', count === 0);
+      }
+    } catch {}
+  }
+  updateCartCount();
+  window.addEventListener('storage', updateCartCount);
+  window.addEventListener('cart-updated', updateCartCount);
+</script>

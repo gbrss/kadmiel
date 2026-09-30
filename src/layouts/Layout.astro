@@ -1,0 +1,30 @@
+---
+import '../styles/global.css';
+import WhatsAppFloat from '../components/WhatsAppFloat.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const {
+  title = 'kadmiel.cl — Tienda online',
+  description = 'kadmiel.cl — Productos seleccionados con envío a Chile. Paga con WebPay.',
+} = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={description} />
+  <title>{title}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/jpeg" href="/logo-kadmiel.jpg" />
+  <link rel="apple-touch-icon" href="/logo-kadmiel.jpg" />
+</head>
+<body class="min-h-screen flex flex-col bg-gray-50">
+  <slot />
+  <WhatsAppFloat />
+</body>
+</html>

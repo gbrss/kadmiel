@@ -1,0 +1,105 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+<Layout title="Carrito — kadmiel.cl">
+  <Header />
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Tu carrito</h1>
+    <div id="cart-empty" class="hidden text-center py-16">
+      <div class="text-6xl mb-4">🛒</div>
+      <p class="text-gray-500 mb-4">Tu carrito está vacío</p>
+      <a href="/" class="btn-primary">Ir a comprar</a>
+    </div>
+    <div id="cart-content" class="hidden">
+      <div id="cart-items" class="space-y-4 mb-8"></div>
+      <div class="bg-white rounded-xl border border-gray-200 p-6">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-gray-600">Subtotal (cliente paga)</span>
+          <span id="cart-subtotal" class="text-xl font-bold text-brand-700">$0</span>
+        </div>
+        <div class="flex justify-between items-center mb-2 text-sm">
+          <span class="text-gray-500">Costo proveedor est. (60%)</span>
+          <span id="cart-cost" class="text-gray-600">$0</span>
+        </div>
+        <div class="flex justify-between items-center mb-4 text-sm">
+          <span class="text-emerald-700 font-medium">Comisión tienda 40%</span>
+          <span id="cart-commission" class="font-bold text-emerald-700">$0</span>
+        </div>
+        <p class="text-sm text-gray-500 mb-4">El envío se calcula al finalizar la compra. Comisión fija del 40% sobre el precio de venta.</p>
+        <a href="/checkout" class="btn-primary w-full text-center">Proceder al pago con WebPay</a>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Layout>
+<script>
+  function formatCLP(n: number) {
+    return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 }).format(n);
+  }
+  function renderCart() {
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const empty = document.getElementById('cart-empty')!;
+    const content = document.getElementById('cart-content')!;
+    const itemsEl = document.getElementById('cart-items')!;
+    if (cart.length === 0) {
+      empty.classList.remove('hidden');
+      content.classList.add('hidden');
+      return;
+    }
+    empty.classList.add('hidden');
+    content.classList.remove('hidden');
+    let subtotal = 0;
+    itemsEl.innerHTML = cart.map((item: any, idx: number) => {
+      subtotal += item.price * item.qty;
+      return `<div class="flex gap-4 bg-white rounded-xl border border-gray-100 p-4">
+        <img src="${item.image}" alt="" class="w-20 h-20 object-cover rounded-lg" />
+        <div class="flex-1 min-w-0">
+          <a href="/producto/${item.slug}" class="font-medium text-sm text-gray-900 hover:text-brand-600 line-clamp-2">${item.name}</a>
+          <p class="text-brand-700 font-semibold mt-1">${formatCLP(item.price)}</p>
+          <div class="flex items-center gap-3 mt-2">
+            <button data-idx="${idx}" class="qty-minus w-7 h-7 rounded border border-gray-300 text-gray-600 hover:bg-gray-50">−</button>
+            <span class="text-sm font-medium w-6 text-center">${item.qty}</span>
+            <button data-idx="${idx}" class="qty-plus w-7 h-7 rounded border border-gray-300 text-gray-600 hover:bg-gray-50">+</button>
+            <button data-idx="${idx}" class="remove-item ml-auto text-sm text-red-500 hover:text-red-700">Eliminar</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    const commission = Math.round(subtotal * 0.40);
+    const cost = subtotal - commission;
+    document.getElementById('cart-subtotal')!.textContent = formatCLP(subtotal);
+    document.getElementById('cart-cost')!.textContent = formatCLP(cost);
+    document.getElementById('cart-commission')!.textContent = formatCLP(commission);
+    document.querySelectorAll('.qty-minus').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const i = Number((btn as HTMLElement).dataset.idx);
+        if (cart[i].qty > 1) cart[i].qty--;
+        else cart.splice(i, 1);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        window.dispatchEvent(new Event('cart-updated'));
+        renderCart();
+      });
+    });
+    document.querySelectorAll('.qty-plus').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const i = Number((btn as HTMLElement).dataset.idx);
+        cart[i].qty++;
+        localStorage.setItem('cart', JSON.stringify(cart));
+        window.dispatchEvent(new Event('cart-updated'));
+        renderCart();
+      });
+    });
+    document.querySelectorAll('.remove-item').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const i = Number((btn as HTMLElement).dataset.idx);
+        cart.splice(i, 1);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        window.dispatchEvent(new Event('cart-updated'));
+        renderCart();
+      });
+    });
+  }
+  renderCart();
+</script>
